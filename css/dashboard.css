@@ -2,73 +2,110 @@
    Dashboard & Analytics Styles
    ============================================ */
 
-/* ── Navigation ── */
+/* ── Navigation (Enterprise Sidebar) ── */
 .main-nav {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  height: 64px;
-  background: rgba(10, 10, 15, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-primary);
+  width: 250px;
+  height: 100vh;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-primary);
   z-index: var(--z-sticky);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--space-6);
+  flex-direction: column;
+  padding: var(--space-6) 0;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.4);
 }
 
-.nav-brand {
+.nav-brand, .nav-logo {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
   font-weight: 800;
   color: var(--text-primary);
+  padding: 0 var(--space-6);
+  margin-bottom: var(--space-8);
 }
 
-.nav-brand-icon {
-  width: 36px;
-  height: 36px;
-  background: var(--gradient-primary);
+.nav-brand-icon, .nav-logo-icon {
+  width: 32px;
+  height: 32px;
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--primary-400);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--text-lg);
 }
 
 .nav-links {
   display: flex;
-  align-items: center;
-  gap: var(--space-1);
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  width: 100%;
 }
 
-.nav-link {
-  padding: var(--space-2) var(--space-4);
+.nav-link, .nav-item {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-tertiary);
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
   cursor: pointer;
   border: none;
-  background: none;
+  background: transparent;
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  text-align: left;
 }
 
-.nav-link:hover {
+.nav-link:hover, .nav-item:hover {
+  background: rgba(255,255,255,0.05);
   color: var(--text-primary);
-  background: var(--bg-glass);
+  transform: translateX(4px);
 }
 
-.nav-link.active {
+.nav-link.active, .nav-item.active {
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, transparent 100%);
   color: var(--primary-400);
-  background: rgba(99, 102, 241, 0.1);
+  border-left: 3px solid var(--primary-500);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+/* Adjust all screens to have margin for the sidebar */
+.screen {
+  margin-left: 250px;
+  width: calc(100% - 250px);
+  min-height: 100vh;
+}
+
+#screen-login {
+  margin-left: 0;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .main-nav {
+    width: 100%;
+    height: 70px;
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid var(--border-primary);
+    padding: 0 var(--space-4);
+    justify-content: space-between;
+  }
+  .nav-brand, .nav-logo { margin-bottom: 0; padding: 0; }
+  .nav-links { flex-direction: row; gap: var(--space-1); width: auto; padding: 0; }
+  .nav-link, .nav-item { padding: var(--space-2); gap: 0; justify-content: center; }
+  .nav-link span, .nav-item span, .nav-item text { display: none; }
+  .nav-link.active, .nav-item.active { border-left: none; border-bottom: 2px solid var(--primary-500); border-radius: 0; background: transparent; }
+  .screen { margin-left: 0; width: 100%; padding-top: 80px; }
 }
 
 /* ── Dashboard Hero ── */

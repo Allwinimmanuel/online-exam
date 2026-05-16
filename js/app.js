@@ -29,14 +29,39 @@ const App = (() => {
     });
   }
 
+  window.currentRole = 'candidate'; // default
+  
+  window.setRole = function(role) {
+    window.currentRole = role;
+    // Update UI buttons
+    document.querySelectorAll('.role-btn').forEach(btn => {
+      btn.classList.remove('active');
+      btn.style.background = 'transparent';
+      btn.style.color = 'var(--text-muted)';
+    });
+    const activeBtn = document.getElementById('role-' + role + '-btn');
+    if (activeBtn) {
+      activeBtn.classList.add('active');
+      activeBtn.style.background = 'var(--primary-500)';
+      activeBtn.style.color = 'white';
+    }
+  };
+
   window.handleLogin = function () {
     UI.toast('Verifying credentials...', 'info');
     setTimeout(() => {
       sessionStorage.setItem('mockai_logged_in', 'true');
-      UI.toast('Welcome back!', 'success');
+      sessionStorage.setItem('mockai_role', window.currentRole);
+      UI.toast(`Welcome back, ${window.currentRole}!`, 'success');
       document.querySelector('.main-nav').style.display = 'flex';
-      _renderDashboard();
-      navigateTo('dashboard');
+      
+      if (window.currentRole === 'interviewer') {
+        _renderInterviewerDashboard();
+        navigateTo('interviewer-dashboard');
+      } else {
+        _renderDashboard();
+        navigateTo('dashboard');
+      }
     }, 1000);
   };
 
@@ -80,6 +105,7 @@ const App = (() => {
     // Render screen content
     switch (screen) {
       case 'dashboard': _renderDashboard(); break;
+      case 'interviewer-dashboard': _renderInterviewerDashboard(); break;
       case 'setup': _renderSetup(); break;
       case 'history': _renderHistory(); break;
       case 'practice': _renderPractice(); break;
@@ -100,6 +126,59 @@ const App = (() => {
       };
     });
   }
+
+  // ══════════ INTERVIEWER DASHBOARD ══════════
+  function _renderInterviewerDashboard() {
+    // Basic mock data generation for the interviewer to review
+    const mockCandidates = [
+      { name: 'John Doe', domain: 'DSA', score: 85, strikes: 0, status: 'Completed' },
+      { name: 'Jane Smith', domain: 'System Design', score: 92, strikes: 1, status: 'Completed' },
+      { name: 'Alex Johnson', domain: 'Web Dev', score: 45, strikes: 4, status: 'Terminated' },
+    ];
+    
+    // Check if there are real local interviews
+    const realInterviews = Storage.getInterviews();
+    if (realInterviews && realInterviews.length > 0) {
+      mockCandidates.unshift({ 
+        id: realInterviews[0].id,
+        name: 'You (Local Test)', 
+        domain: realInterviews[0].domain || 'Mixed', 
+        score: realInterviews[0].score || 0, 
+        strikes: realInterviews[0].violations ? realInterviews[0].violations.length : 0, 
+        status: realInterviews[0].violations && realInterviews[0].violations.length >= 4 ? 'Terminated' : 'Completed'
+      });
+    }
+
+    const tbody = document.getElementById('interviewer-candidates-list');
+    if (!tbody) return;
+    
+    tbody.innerHTML = mockCandidates.map(c => {
+      const scoreColor = c.score >= 70 ? 'var(--success-400)' : c.score >= 45 ? 'var(--warning-400)' : 'var(--danger-400)';
+      const strikeColor = c.strikes >= 4 ? 'var(--danger-400)' : c.strikes > 0 ? 'var(--warning-400)' : 'var(--text-secondary)';
+      const statusBadge = c.status === 'Terminated' ? 'danger' : 'success';
+      const actionButton = c.id ? `<button class="btn btn-outline btn-sm" onclick="generateInterviewerReport('${c.id}')">View Report</button>` : `<button class="btn btn-outline btn-sm" onclick="UI.toast('Detailed report coming soon', 'info')">View Report</button>`;
+
+      return `<tr style="border-bottom: 1px solid var(--border-primary); background: var(--bg-primary);">
+        <td style="padding: 16px;"><strong>${c.name}</strong></td>
+        <td style="padding: 16px;">${c.domain}</td>
+        <td style="padding: 16px; color: ${scoreColor}; font-weight: bold;">${c.score}%</td>
+        <td style="padding: 16px; color: ${strikeColor}; font-weight: bold;">${c.strikes}/4</td>
+        <td style="padding: 16px;"><span class="badge badge-${statusBadge}">${c.status}</span></td>
+        <td style="padding: 16px;">${actionButton}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  window.generateInterviewerReport = function(id) {
+    const interviews = Storage.getInterviews();
+    const sessionData = interviews.find(i => i.id === id);
+    if (sessionData && sessionData.analysis) {
+      PDFReport.generate(sessionData);
+      UI.toast('Report Generated', 'success');
+    } else {
+      UI.toast('Report data not fully available', 'error');
+    }
+  };
 
   // ══════════ DASHBOARD ══════════
   function _renderDashboard() {

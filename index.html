@@ -33,6 +33,12 @@
         <h2 class="mb-2">Welcome Back</h2>
         <p class="text-muted mb-8">Login to your autonomous AI proctoring account.</p>
 
+        <!-- Role Selection Toggle -->
+        <div class="role-toggle mb-6" style="display:flex; background:var(--bg-secondary); padding:4px; border-radius:var(--radius-lg); margin-bottom:24px;">
+          <button id="role-candidate-btn" class="role-btn active" onclick="setRole('candidate')" style="flex:1; padding:8px; border-radius:var(--radius-md); border:none; background:var(--primary-500); color:white; font-weight:600; cursor:pointer; transition:all 0.2s;">Candidate</button>
+          <button id="role-interviewer-btn" class="role-btn" onclick="setRole('interviewer')" style="flex:1; padding:8px; border-radius:var(--radius-md); border:none; background:transparent; color:var(--text-muted); font-weight:600; cursor:pointer; transition:all 0.2s;">Interviewer</button>
+        </div>
+
         <div style="text-align: left;">
           <label class="form-label" style="display:block; margin-bottom: 8px;">Email Address</label>
           <input type="email" class="form-control mb-4" placeholder="admin@example.com" value="candidate@mockai.com"
@@ -91,8 +97,45 @@
     </div>
   </nav>
 
-  <!-- ═══════ DASHBOARD SCREEN ═══════ -->
-  <div id="screen-dashboard" class="screen active">
+  <!-- ═══════ INTERVIEWER DASHBOARD ═══════ -->
+  <div id="screen-interviewer-dashboard" class="screen">
+    <div class="container">
+      <div class="dashboard-hero" style="background: linear-gradient(135deg, var(--slate-800) 0%, var(--bg-primary) 100%);">
+        <div class="bg-orb bg-orb-1" style="background:var(--accent-500);"></div>
+        <div class="bg-orb bg-orb-2" style="background:var(--primary-500);"></div>
+        <h1>Interviewer <span class="text-gradient" style="background: linear-gradient(135deg, var(--accent-300), var(--accent-500)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Portal</span></h1>
+        <p class="subtitle">Review candidate interview reports, monitor security violations, and analyze performance metrics.</p>
+      </div>
+
+      <h2 class="mb-6 mt-8">Recent Candidate Submissions</h2>
+      
+      <div class="card p-0" style="overflow: hidden;">
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; text-align: left; border-collapse: collapse;">
+            <thead style="background: var(--bg-secondary); border-bottom: 1px solid var(--border-primary);">
+              <tr>
+                <th style="padding: 16px; font-weight: 600; color: var(--text-secondary);">Candidate</th>
+                <th style="padding: 16px; font-weight: 600; color: var(--text-secondary);">Domain</th>
+                <th style="padding: 16px; font-weight: 600; color: var(--text-secondary);">Score</th>
+                <th style="padding: 16px; font-weight: 600; color: var(--text-secondary);">Security Strikes</th>
+                <th style="padding: 16px; font-weight: 600; color: var(--text-secondary);">Status</th>
+                <th style="padding: 16px; font-weight: 600; color: var(--text-secondary);">Action</th>
+              </tr>
+            </thead>
+            <tbody id="interviewer-candidates-list">
+              <!-- Populated by JS -->
+              <tr>
+                <td colspan="6" style="padding: 24px; text-align: center; color: var(--text-muted);">No candidate reports available yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ CANDIDATE DASHBOARD SCREEN ═══════ -->
+  <div id="screen-dashboard" class="screen">
     <div class="container">
       <div class="dashboard-hero">
         <div class="bg-orb bg-orb-1"></div>
@@ -829,6 +872,8 @@ The exam is locked for security reasons. Please ensure your face is clearly visi
 </div>
 
 <!-- ═══════ SCRIPTS ═══════ -->
+<!-- Load Face-API for High-Fidelity Eye/Gaze Tracking -->
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/speech.js"></script>
 <script src="js/question-bank.js"></script>

@@ -16,6 +16,13 @@ const Security = (() => {
   let devToolsOpen = false;
   let fullscreenExitCount = 0;
 
+  // Audio Monitoring State
+  let audioContext = null;
+  let analyser = null;
+  let audioStream = null;
+  let audioInterval = null;
+  let highNoiseCount = 0;
+
   function activate(callbacks = {}) {
     if (isActive) return;
     isActive = true;
@@ -59,12 +66,17 @@ const Security = (() => {
     // Resize detection
     window.addEventListener('resize', _handleResize);
 
-    console.log('🔒 Security module activated');
+    // Audio Monitoring
+    _startAudioMonitoring();
+
+    console.log('🔒 Security module activated (4-Strike System + Audio)');
   }
 
   function deactivate() {
     if (!isActive) return;
     isActive = false;
+
+    _stopAudioMonitoring();
 
     document.removeEventListener('visibilitychange', _handleVisibility);
     document.removeEventListener('copy', _preventAction);
@@ -330,6 +342,59 @@ const Security = (() => {
     if (document.exitFullscreen) return document.exitFullscreen();
     if (document.webkitExitFullscreen) return document.webkitExitFullscreen();
     return Promise.resolve();
+  }
+
+  // ══════════ AUDIO FRAUD DETECTION ══════════
+  async function _startAudioMonitoring() {
+    try {
+      audioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioContext = new AudioContext();
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 256;
+      
+      const source = audioContext.createMediaStreamSource(audioStream);
+      source.connect(analyser);
+      
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      
+      audioInterval = setInterval(() => {
+        if (!isActive) return;
+        analyser.getByteFrequencyData(dataArray);
+        let sum = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+          sum += dataArray[i];
+        }
+        const avgVolume = sum / dataArray.length;
+        
+        // If volume is consistently high, flag it
+        if (avgVolume > 35) { // Threshold for background noise
+          highNoiseCount++;
+          if (highNoiseCount > 20) { // Roughly 4 seconds of continuous loud noise
+            _handleSevereViolation('High background noise / talking detected in environment.');
+            highNoiseCount = 0; // Reset after strike
+          }
+        } else {
+          highNoiseCount = Math.max(0, highNoiseCount - 1); // Gradually reduce if quiet
+        }
+      }, 200);
+      
+    } catch (e) {
+      console.warn('Audio monitoring failed to start:', e);
+    }
+  }
+
+  function _stopAudioMonitoring() {
+    if (audioInterval) clearInterval(audioInterval);
+    if (audioStream) {
+      audioStream.getTracks().forEach(t => t.stop());
+      audioStream = null;
+    }
+    if (audioContext) {
+      audioContext.close();
+      audioContext = null;
+    }
+    highNoiseCount = 0;
   }
 
   // ── Public API ──

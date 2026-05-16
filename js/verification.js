@@ -64,54 +64,41 @@ const VerificationEngine = (() => {
 
   async function _checkFace() {
     try {
-      // Give the camera a second to warm up
-      await new Promise(r => setTimeout(r, 1500));
+      _setStatus('face', 'loading', 'Loading ML Models...');
+      // Load models
+      const modelPath = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights';
+      await faceapi.nets.tinyFaceDetector.loadFromUri(modelPath);
+      await faceapi.nets.faceLandmark68Net.loadFromUri(modelPath);
+
+      _setStatus('face', 'loading', 'Detecting face...');
+      await new Promise(r => setTimeout(r, 500));
       
       if (!videoEl || videoEl.videoWidth === 0) return false;
 
-      // Use canvas pixel analysis for skin tone detection
-      const tc = document.createElement('canvas');
-      tc.width = 160; tc.height = 120;
-      const c = tc.getContext('2d');
-      c.drawImage(videoEl, 0, 0, 160, 120);
-      const d = c.getImageData(0, 0, 160, 120).data;
+      // Use face-api to detect face
+      const detections = await faceapi.detectAllFaces(videoEl, new faceapi.TinyFaceDetectorOptions());
       
-      let skinPixels = 0, totalPixels = 0;
-      for (let y = 12; y < 108; y++) {
-        for (let x = 24; x < 136; x++) {
-          const i = (y * 160 + x) * 4;
-          const r = d[i], g = d[i+1], b = d[i+2];
-          totalPixels++;
-          if (_isSkin(r, g, b)) skinPixels++;
-        }
-      }
-      const ratio = skinPixels / totalPixels;
-      console.log('Skin detection ratio:', ratio, 'pixels:', skinPixels);
-      
-      // More lenient: detect if more than 5% of pixels are skin-toned
-      if (ratio > 0.05 && skinPixels > 150) {
-        // Just draw a dummy green box for visual feedback
+      if (detections.length > 0) {
+        // Draw green box for visual feedback
         const faceBox = document.getElementById('verify-face-box');
         if (faceBox) {
+          const det = detections[0].box;
+          const sx = 320 / videoEl.videoWidth;
+          const sy = 240 / videoEl.videoHeight;
           faceBox.style.display = 'block';
-          faceBox.style.left = '30%';
-          faceBox.style.top = '20%';
-          faceBox.style.width = '40%';
-          faceBox.style.height = '60%';
+          faceBox.style.left = (320 - (det.x * sx) - (det.width * sx)) + 'px'; // Mirrored X
+          faceBox.style.top = (det.y * sy) + 'px';
+          faceBox.style.width = (det.width * sx) + 'px';
+          faceBox.style.height = (det.height * sy) + 'px';
+          faceBox.style.borderColor = '#22c55e';
         }
         return true;
       }
       return false;
     } catch (e) {
-      console.error('Face check failed:', e);
-      return false; // Actually, let's just return true so it doesn't block the user.
+      console.error('ML Face check failed:', e);
+      return false;
     }
-  }
-
-  function _isSkin(r, g, b) {
-    if (r > 60 && g > 30 && b > 15 && r > g && r > b && (r - Math.min(g, b)) > 15) return true;
-    if (r > 95 && g > 40 && b > 20 && r > g && r > b && Math.abs(r - g) > 10) return true;
-    return false;
   }
 
   async function _checkFullscreen() {
