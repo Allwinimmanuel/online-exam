@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="AI-Powered Mock Interview System for placement preparation. Practice technical, HR, and behavioral interviews with real-time AI evaluation, face detection, and detailed analytics.">
+  <title>AI Mock Interview System — Placement Prep</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/interview.css">
+</head>
+
+<body>
+  <!-- ═══════ LOGIN SCREEN ═══════ -->
+  <div id="screen-login" class="screen active">
+    <div class="container flex justify-center items-center" style="min-height: 100vh;">
+      <div class="card card-glass" style="max-width: 450px; width: 100%; padding: 40px; text-align: center;">
+        <div class="nav-logo mb-6" style="justify-content: center; font-size: 32px;">
+          <div class="nav-logo-icon" style="width: 40px; height: 40px;"><svg width="32" height="32" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="12" r="6"></circle>
+              <circle cx="12" cy="12" r="2"></circle>
+            </svg></div>
+          Mock<span style="color:var(--primary-400)">AI</span>
+        </div>
+        <h2 class="mb-2">Welcome Back</h2>
+        <p class="text-muted mb-8">Login to your autonomous AI proctoring account.</p>
+
+        <div style="text-align: left;">
+          <label class="form-label" style="display:block; margin-bottom: 8px;">Email Address</label>
+          <input type="email" class="form-control mb-4" placeholder="admin@example.com" value="candidate@mockai.com"
+            style="width:100%; margin-bottom: 16px;">
+
+          <label class="form-label" style="display:block; margin-bottom: 8px;">Password</label>
+          <input type="password" class="form-control mb-6" placeholder="••••••••" value="password123"
+            style="width:100%; margin-bottom: 24px;">
+
+          <button class="btn btn-primary btn-lg w-full" onclick="handleLogin()" style="width:100%;">Login to
+            Dashboard</button>
+        </div>
+
+        <div class="mt-6 text-sm text-muted" style="margin-top: 24px;">
+          Don't have an account? <a href="#" class="text-primary">Sign up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="main-nav" style="display: none;">
+    <div class="nav-logo">
+      <div class="nav-logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <circle cx="12" cy="12" r="6"></circle>
+          <circle cx="12" cy="12" r="2"></circle>
+        </svg></div>
+      Mock<span style="color:var(--primary-400)">AI</span>
+    </div>
+    <div class="nav-links">
+      <button class="nav-item active" onclick="goTo('dashboard')"><svg width="16" height="16" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg> Dashboard</button>
+      <button class="nav-item" onclick="goTo('setup')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2">
+          <path d="M21.5 2v6h-6M2.13 15.57a9 9 0 1 0 3.87-11.45L21.5 8"></path>
+        </svg> New Interview</button>
+      <button class="nav-item" onclick="goTo('history')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg> History</button>
+      <button class="nav-item" onclick="goTo('settings')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+          </path>
+        </svg> Settings</button>
+    </div>
+  </nav>
+
+  <!-- ═══════ DASHBOARD SCREEN ═══════ -->
+  <div id="screen-dashboard" class="screen active">
+    <div class="container">
+      <div class="dashboard-hero">
+        <div class="bg-orb bg-orb-1"></div>
+        <div class="bg-orb bg-orb-2"></div>
+        <h1>Your AI Interview <span class="text-gradient">Coach</span></h1>
+        <p class="subtitle">Practice mock interviews powered by AI. Get real-time feedback, face monitoring, and
+          detailed analytics to ace your placements.</p>
+        <button class="btn btn-primary btn-lg" onclick="goTo('setup')"
+          style="display:flex;align-items:center;gap:8px;"><svg width="20" height="20" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+            </path>
+          </svg> Start Mock Interview</button>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid stagger-children">
+        <div class="stat-card">
+          <div class="stat-icon"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+              </path>
+            </svg></div>
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">Total Interviews</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+              </path>
+            </svg></div>
+          <div class="stat-value" id="stat-avg">--</div>
+          <div class="stat-label">Avg Score</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
+              </path>
+            </svg></div>
+          <div class="stat-value" id="stat-best">--</div>
+          <div class="stat-label">Best Score</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z">
+              </path>
+            </svg></div>
+          <div class="stat-value" id="stat-streak">0</div>
+          <div class="stat-label">Day Streak</div>
+        </div>
+      </div>
+
+      <!-- Quick Start -->
+      <div class="quick-start-section">
+        <div class="section-header">
+          <h3 class="section-title">Quick Start Domains</h3>
+        </div>
+        <div class="domain-cards stagger-children">
+          <div class="domain-card" onclick="goTo('setup')">
+            <div class="domain-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <path d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <path d="M2 15h10"></path>
+                <path d="M5 12l3 3-3 3"></path>
+              </svg></div>
+            <div class="domain-card-title">DSA</div>
+            <div class="domain-card-desc">Arrays, Trees, Graphs, DP & more</div>
+          </div>
+          <div class="domain-card" onclick="goTo('setup')">
+            <div class="domain-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+              </svg></div>
+            <div class="domain-card-title">DBMS</div>
+            <div class="domain-card-desc">SQL, Normalization, Transactions</div>
+          </div>
+          <div class="domain-card" onclick="goTo('setup')">
+            <div class="domain-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg></div>
+            <div class="domain-card-title">OS</div>
+            <div class="domain-card-desc">Process, Memory, Scheduling</div>
+          </div>
+          <div class="domain-card" onclick="goTo('setup')">
+            <div class="domain-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg></div>
+            <div class="domain-card-title">HR</div>
+            <div class="domain-card-desc">Personal, Career, Behavioral</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Progress -->
+      <div class="quick-start-section">
+        <div class="section-header">
+          <h3 class="section-title">Recent Interviews</h3><button class="btn btn-ghost"
+            onclick="location.hash='history'">View All →</button>
+        </div>
+        <div id="recent-interviews" class="history-list"></div>
+      </div>
+
+      <!-- Progress Chart -->
+      <div class="quick-start-section">
+        <div class="section-header">
+          <h3 class="section-title">Progress Trend</h3>
+        </div>
+        <div class="card">
+          <div class="chart-container"><canvas id="progress-chart"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ SETUP SCREEN ═══════ -->
+  <div id="screen-setup" class="screen">
+    <div class="container setup-section">
+      <div class="setup-card">
+        <h2 class="text-center mb-6">Configure Your <span class="text-gradient">Interview</span></h2>
+
+        <!-- Progress -->
+        <div class="setup-progress">
+          <div class="setup-progress-step">
+            <div class="setup-progress-dot active">1</div>
+          </div>
+          <div class="setup-progress-line"></div>
+          <div class="setup-progress-step">
+            <div class="setup-progress-dot">2</div>
+          </div>
+          <div class="setup-progress-line"></div>
+          <div class="setup-progress-step">
+            <div class="setup-progress-dot">3</div>
+          </div>
+        </div>
+
+        <!-- Step 1: Domain & Company -->
+        <div id="setup-step-1" class="setup-step active">
+          <h4 class="mb-4">Select Interview Domain</h4>
+          <div class="option-grid mb-6">
+            <div class="option-card" onclick="selectDomain('Technical - DSA')">
+              <div class="option-card-label">DSA</div>
+              <div class="option-card-sub">Data Structures</div>
+            </div>
+            <div class="option-card" onclick="selectDomain('Technical - DBMS')">
+              <div class="option-card-label">DBMS</div>
+              <div class="option-card-sub">Databases</div>
+            </div>
+            <div class="option-card" onclick="selectDomain('Technical - OS')">
+              <div class="option-card-label">OS</div>
+              <div class="option-card-sub">Operating Systems</div>
+            </div>
+            <div class="option-card" onclick="selectDomain('Technical - Web Dev')">
+              <div class="option-card-label">Web Dev</div>
+              <div class="option-card-sub">HTML/CSS/JS</div>
+            </div>
+            <div class="option-card" onclick="selectDomain('HR')">
+              <div class="option-card-label">HR</div>
+              <div class="option-card-sub">Personal</div>
+            </div>
+            <div class="option-card" onclick="selectDomain('System Design')">
+              <div class="option-card-label">System Design</div>
+              <div class="option-card-sub">Architecture</div>
+            </div>
+          </div>
+
+          <h4 class="mb-4 text-gradient">Or Choose a Company Template</h4>
+          <div class="option-grid">
+            <div class="option-card" style="border-color: #4285F4;" onclick="selectDomain('Company - Google')">
+              <div class="option-card-label" style="color: #4285F4;">Google</div>
+              <div class="option-card-sub">Hard DSA & Design</div>
+            </div>
+            <div class="option-card" style="border-color: #FF9900;" onclick="selectDomain('Company - Amazon')">
+              <div class="option-card-label" style="color: #FF9900;">Amazon</div>
+              <div class="option-card-sub">Leadership & DSA</div>
+            </div>
+            <div class="option-card" style="border-color: #0078D4;" onclick="selectDomain('Company - Microsoft')">
+              <div class="option-card-label" style="color: #0078D4;">Microsoft</div>
+              <div class="option-card-sub">Core Tech & DSA</div>
+            </div>
+            <div class="option-card" style="border-color: #00A1E0;" onclick="selectDomain('Company - TCS')">
+              <div class="option-card-label" style="color: #00A1E0;">TCS Ninja</div>
+              <div class="option-card-sub">Aptitude & Core</div>
+            </div>
+          </div>
+          <div class="flex justify-end mt-6"><button class="btn btn-primary" onclick="nextSetupStep(2)">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Difficulty -->
+        <div id="setup-step-2" class="setup-step">
+          <h4 class="mb-4">Select Difficulty Level</h4>
+          <div class="option-grid" style="grid-template-columns:repeat(3,1fr)">
+            <div class="option-card selected" onclick="selectDifficulty(1)">
+              <div class="option-card-label">Fresher</div>
+              <div class="option-card-sub">Basic concepts</div>
+            </div>
+            <div class="option-card" onclick="selectDifficulty(2)">
+              <div class="option-card-label">Intermediate</div>
+              <div class="option-card-sub">In-depth questions</div>
+            </div>
+            <div class="option-card" onclick="selectDifficulty(3)">
+              <div class="option-card-label">Expert</div>
+              <div class="option-card-sub">Advanced topics</div>
+            </div>
+          </div>
+          <div class="flex justify-between mt-6">
+            <button class="btn btn-secondary" onclick="prevSetupStep(1)">Back</button>
+            <button class="btn btn-primary" onclick="nextSetupStep(3)">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Duration -->
+        <div id="setup-step-3" class="setup-step">
+          <h4 class="mb-4">Select Duration</h4>
+          <div class="option-grid" style="grid-template-columns:repeat(3,1fr)">
+            <div class="option-card" onclick="selectDuration(5)">
+              <div class="option-card-label">5 min</div>
+              <div class="option-card-sub">Quick (5 Qs)</div>
+            </div>
+            <div class="option-card selected" onclick="selectDuration(15)">
+              <div class="option-card-label">15 min</div>
+              <div class="option-card-sub">Short (10 Qs)</div>
+            </div>
+            <div class="option-card" onclick="selectDuration(30)">
+              <div class="option-card-label">30 min</div>
+              <div class="option-card-sub">Standard (15 Qs)</div>
+            </div>
+          </div>
+
+          <div class="card mt-6" style="background:var(--bg-tertiary)">
+            <h5 class="mb-4">Interview Summary</h5>
+            <div class="flex gap-6 flex-wrap" style="font-size:var(--text-sm);color:var(--text-secondary)">
+              <span>Domain will appear here</span>
+              <span>Difficulty: Fresher</span>
+              <span>Duration: 15 min</span>
+              <span>~10 Questions</span>
+            </div>
+            <p class="mt-4" style="font-size:var(--text-xs);color:var(--text-muted)">Camera & microphone will be
+              requested. Security measures are active.</p>
+          </div>
+
+          <div class="flex justify-between mt-6">
+            <button class="btn btn-secondary" onclick="prevSetupStep(2)">Back</button>
+            <button class="btn btn-primary btn-lg" onclick="startInterview()">Start Interview</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ VERIFICATION SCREEN ═══════ -->
+  <div id="screen-verification" class="screen">
+    <div class="container setup-section">
+      <div class="setup-card" style="max-width: 600px;">
+        <h2 class="text-center mb-6">System <span class="text-gradient">Verification</span></h2>
+        <p class="text-center text-muted mb-8">Please complete the required hardware and environment checks before
+          starting the interview. This ensures a secure and smooth experience.</p>
+
+        <div class="verification-list stagger-children">
+          <!-- Camera Check -->
+          <div class="verification-item" id="verify-camera">
+            <div class="verify-icon"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="13" r="4"></circle>
+              </svg></div>
+            <div class="verify-text">
+              <h4>Webcam Access</h4>
+              <p class="text-xs text-muted">Allow camera permissions</p>
+            </div>
+            <div class="verify-status spinner"></div>
+          </div>
+
+          <!-- Microphone Check -->
+          <div class="verification-item" id="verify-mic">
+            <div class="verify-icon"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+                <line x1="8" y1="23" x2="16" y2="23"></line>
+              </svg></div>
+            <div class="verify-text">
+              <h4>Microphone Access</h4>
+              <p class="text-xs text-muted">Speak clearly into your mic</p>
+            </div>
+            <div class="verify-status pending">Pending</div>
+          </div>
+
+          <!-- Face Detection Check -->
+          <div class="verification-item" id="verify-face">
+            <div class="verify-icon"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+              </svg></div>
+            <div class="verify-text">
+              <h4>Face Recognition</h4>
+              <p class="text-xs text-muted">Ensure good lighting, 1 face visible</p>
+            </div>
+            <div class="verify-status pending">Pending</div>
+          </div>
+
+          <!-- Fullscreen Check -->
+          <div class="verification-item" id="verify-fullscreen">
+            <div class="verify-icon"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
+                </path>
+              </svg></div>
+            <div class="verify-text">
+              <h4>Fullscreen Mode</h4>
+              <p class="text-xs text-muted">Required for secure assessment</p>
+            </div>
+            <div class="verify-status pending">Pending</div>
+          </div>
+        </div>
+
+        <!-- Live Preview for setup -->
+        <div id="verify-preview-container" class="mt-6 mb-6 hidden">
+          <div
+            style="width: 100%; height: 180px; background: #000; border-radius: var(--radius-md); overflow: hidden; position: relative; border: 1px solid var(--border-primary);">
+            <video id="verify-video" autoplay muted playsinline disablePictureInPicture
+              style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);"></video>
+            <div id="verify-face-box" style="position: absolute; border: 2px solid var(--success-500); display: none;">
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-4 mt-8">
+          <button class="btn btn-ghost" onclick="prevSetupStep(3)">Back</button>
+          <button id="btn-start-verification" class="btn btn-primary flex-1"
+            onclick="VerificationEngine.runChecks()">Run Diagnostics</button>
+          <button id="btn-enable-fullscreen" class="btn btn-warning flex-1 hidden"
+            onclick="manualEnableFullscreen()">Enable Fullscreen</button>
+          <button id="btn-skip-fullscreen" class="btn btn-danger flex-1 hidden" onclick="skipFullscreen()">Skip & Begin
+            Interview</button>
+          <button id="btn-proceed-interview" class="btn btn-success flex-1 hidden" onclick="proceedToInterview()">Begin
+            Interview</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ INTERVIEW SCREEN ═══════ -->
+  <div id="screen-interview" class="screen">
+    <div class="interview-container">
+      <!-- Header -->
+      <div class="interview-header">
+        <div class="interview-header-left">
+          <div class="avatar-ai"
+            style="width:36px;height:36px;border-radius:50%;background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-500)" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M12 2a2 2 0 0 1 2 2v2.1a9.01 9.01 0 0 1 7.9 7.9H24a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2.1a9.01 9.01 0 0 1-7.9 7.9V30a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.1a9.01 9.01 0 0 1-7.9-7.9H0a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h2.1A9.01 9.01 0 0 1 10 6.1V4a2 2 0 0 1 2-2z">
+              </path>
+            </svg>
+          </div>
+          <div>
+            <div style="font-weight:700;font-size:var(--text-sm)">AI Mock Interview</div>
+            <div style="font-size:var(--text-xs);color:var(--text-tertiary)" id="interview-domain">Technical</div>
+          </div>
+        </div>
+        <div class="interview-header-center">
+          <div class="interview-timer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg><span id="interview-timer">30:00</span></div>
+          <div class="question-counter">Question <span id="q-current">0</span> / <span id="q-total">10</span></div>
+        </div>
+        <div class="interview-header-right">
+          <div class="badge badge-success" style="padding: 6px 12px; font-size: var(--text-xs);"><svg width="12"
+              height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg> Proctoring Active</div>
+          <button class="btn btn-danger btn-sm" onclick="endInterview()">End Session</button>
+        </div>
+      </div>
+
+      <!-- Video First Interface -->
+      <div class="video-first-container">
+
+        <!-- Teleprompter (AI Question) -->
+        <div class="teleprompter-panel" id="teleprompter-panel" style="position: relative;">
+          <div id="ai-voice-indicator" class="badge badge-primary mb-2 hidden" style="align-self:flex-start">🎙️ AI is
+            speaking</div>
+          <div id="ai-avatar" class="ai-avatar mb-4" style="margin-bottom: 1rem;">
+            <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2a5 5 0 0 1 5 5v2a5 5 0 0 1-10 0V7a5 5 0 0 1 5-5z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+          </div>
+          <div id="ai-typing-indicator" class="typing-indicator hidden" style="margin-bottom: 1rem;">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+          <h2 id="ai-question-text" class="ai-question-text">AI is preparing your interview...</h2>
+          <div id="ai-hint-text" class="text-muted text-sm mt-2 hidden"></div>
+        </div>
+
+        <!-- Floating Webcam PiP (Bottom Right) -->
+        <div id="webcam-container" class="webcam-pip"
+          style="position: fixed; bottom: 30px; right: 30px; width: 280px; height: 180px; z-index: 9999; border-radius: var(--radius-lg); overflow: hidden; border: 2px solid var(--primary-500); box-shadow: 0 10px 30px rgba(0,0,0,0.6); background: #000; display: none;">
+          <div id="webcam-video-container" style="width:100%;height:100%;position:relative;"></div>
+          <div id="webcam-status" class="webcam-status ok"
+            style="position: absolute; top: 10px; left: 10px; font-size: 10px; padding: 4px 8px;"><span
+              class="webcam-status-dot"></span>Proctoring Active</div>
+          <div id="face-tracking-overlay" class="face-tracking-overlay"></div>
+          <div id="eye-indicator" class="eye-indicator tracking"
+            style="position: absolute; bottom: 10px; right: 10px; font-size: 10px;">Tracking</div>
+        </div>
+
+        <!-- Code Editor Panel -->
+        <div id="code-editor-container" class="hidden"
+          style="flex: 2; display: flex; flex-direction: column; background: var(--bg-tertiary); border: 2px solid var(--border-primary); border-radius: var(--radius-xl); overflow: hidden;">
+          <div
+            style="background: var(--bg-secondary); padding: 8px 16px; border-bottom: 1px solid var(--border-primary); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-family: var(--font-mono); font-size: 14px; font-weight: bold;">main.js</span>
+            <select id="code-language-select"
+              style="background: var(--bg-primary); color: white; border: 1px solid var(--border-secondary); border-radius: 4px; padding: 4px 8px; font-size: 12px;">
+              <option value="javascript">JavaScript</option>
+              <option value="python">Python</option>
+              <option value="java">Java</option>
+              <option value="cpp">C++</option>
+            </select>
+          </div>
+          <textarea id="code-editor-textarea" spellcheck="false"
+            style="flex: 1; width: 100%; padding: 16px; font-family: 'Courier New', Courier, monospace; font-size: 14px; background: #1e1e1e; color: #d4d4d4; border: none; outline: none; resize: none;"></textarea>
+          <div
+            style="background: var(--bg-secondary); padding: 8px 16px; border-top: 1px solid var(--border-primary); display: flex; justify-content: flex-end;">
+            <button class="btn btn-primary btn-sm" onclick="runCode()">Run Code</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Voice Controls & Transcript -->
+      <div class="voice-controls-panel text-center mt-6">
+        <div class="flex justify-center items-center gap-4">
+          <button id="voice-btn" class="btn btn-primary btn-xl voice-record-btn" onclick="toggleVoice()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+            <span id="voice-btn-text">Start Speaking</span>
+          </button>
+          <button class="btn btn-ghost" onclick="enableTypingFallback()" title="Type Answer Instead"
+            style="padding:12px;border-radius:50%">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 5h18c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2z"></path>
+              <path d="M7 9h.01M12 9h.01M17 9h.01M7 13h.01M12 13h.01M17 13h.01M9 17h6"></path>
+            </svg>
+          </button>
+        </div>
+        <div id="voice-transcript" class="voice-transcript mt-4">Your spoken answer will appear here...</div>
+
+        <textarea id="answer-input" class="answer-textarea mt-4 hidden" placeholder="Type your answer here..."
+          style="width:100%;max-width:800px;min-height:100px;background:var(--bg-tertiary);border:1px solid var(--border-secondary);border-radius:var(--radius-md);padding:var(--space-4);color:var(--text-primary);display:none;"></textarea>
+
+        <div class="flex gap-4 mt-6 justify-center">
+          <button id="submit-answer-btn" class="btn btn-secondary" onclick="submitAnswer()" disabled>Confirm &
+            Submit</button>
+          <button class="btn btn-ghost" onclick="getHint()">Need a Hint?</button>
+          <button class="btn btn-ghost" onclick="skipQuestion()">Skip Question</button>
+        </div>
+      </div>
+
+      <!-- Hidden elements required by JS -->
+      <div id="chat-area" style="display:none"></div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="interview-footer">
+      <div class="violation-counter" id="violation-counter">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>Security Logs: <strong id="violation-count">0</strong> violations</span>
+      </div>
+      <div style="font-size:var(--text-xs);color:var(--text-muted)">Secure Assessment Platform</div>
+    </div>
+    </div>
+    
+    <!-- Corner Webcam PiP -->
+    <div id="webcam-container" class="hidden" style="position:fixed; bottom:28px; right:28px; width:260px; height:168px; border-radius:var(--radius-lg); overflow:hidden; border:2px solid var(--primary-500); box-shadow:0 8px 32px rgba(0,0,0,0.6); background:#000; z-index:9000;">
+      <div class="pip-label" style="position:absolute; top:8px; left:8px; font-size:10px; background:rgba(0,0,0,0.7); color:#10b981; padding:4px 8px; border-radius:4px; display:flex; align-items:center; gap:6px; z-index:1; font-weight:600;">
+        <div style="width:6px; height:6px; background:#10b981; border-radius:50%; box-shadow:0 0 4px #10b981;"></div> Face Detected
+      </div>
+      <div id="webcam-video-container" style="width:100%; height:100%;"></div>
+    </div>
+
+  </div>
+
+
+  </div>
+
+  <!-- ═══════ RESULTS SCREEN ═══════ -->
+  <div id="screen-results" class="screen">
+    <div class="container results-container">
+      <div class="results-hero">
+        <h2>Interview Complete</h2>
+        <div id="result-grade" class="results-grade grade-b mt-6">B</div>
+        <div id="result-score" class="results-score mt-4">65 / 100</div>
+        <p id="result-summary" class="results-summary-text mt-4">Good performance with room for improvement.</p>
+        <div class="flex justify-center gap-4 mt-6">
+          <button class="btn btn-primary" onclick="downloadReport()">Download Report</button>
+          <button class="btn btn-secondary" onclick="goTo('setup')">New Interview</button>
+          <button class="btn btn-ghost" onclick="backToDashboard()">Dashboard</button>
+        </div>
+      </div>
+
+      <!-- Metrics -->
+      <div class="stats-grid stagger-children">
+        <div class="stat-card">
+          <div class="stat-icon">📝</div>
+          <div class="stat-value" id="result-questions">0</div>
+          <div class="stat-label">Questions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💬</div>
+          <div class="stat-value" id="result-communication">0%</div>
+          <div class="stat-label">Communication</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏱️</div>
+          <div class="stat-value" id="result-time">0s</div>
+          <div class="stat-label">Avg Response</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔒</div>
+          <div class="stat-value" id="result-violations">0</div>
+          <div class="stat-label">Violations</div>
+        </div>
+      </div>
+
+      <!-- Strengths & Weaknesses -->
+      <div class="results-grid">
+        <div class="result-detail-card">
+          <h4>Strengths</h4>
+          <div id="result-strengths"></div>
+        </div>
+        <div class="result-detail-card">
+          <h4>Improve</h4>
+          <div id="result-weaknesses"></div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="results-grid">
+        <div class="result-detail-card">
+          <h4>Question Scores</h4>
+          <div class="chart-container"><canvas id="result-bar-chart"></canvas></div>
+        </div>
+        <div class="result-detail-card">
+          <h4>Skill Radar</h4>
+          <div class="chart-container"><canvas id="result-radar-chart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Question Review -->
+      <div class="result-detail-card mt-6">
+        <h4>Question-by-Question Review</h4>
+        <div id="question-reviews" class="mt-4"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ HISTORY SCREEN ═══════ -->
+  <div id="screen-history" class="screen">
+    <div class="container history-container">
+      <div class="section-header">
+        <h2>Interview History</h2>
+      </div>
+      <div class="results-grid mb-8">
+        <div class="result-detail-card">
+          <h4>Domain Distribution</h4>
+          <div class="chart-container"><canvas id="history-pie-chart"></canvas></div>
+        </div>
+        <div class="result-detail-card"
+          style="display:flex;flex-direction:column;justify-content:center;align-items:center">
+          <h4 class="mb-4">Quick Stats</h4>
+          <p class="text-muted text-sm">Complete interviews to see trends and analytics here.</p>
+          <button class="btn btn-primary mt-4" onclick="goTo('setup')">Start Interview</button>
+        </div>
+      </div>
+      <div id="history-list" class="history-list"></div>
+    </div>
+  </div>
+
+  <!-- ═══════ PRACTICE SCREEN ═══════ -->
+  <div id="screen-practice" class="screen">
+    <div class="container" style="padding-top:calc(64px + var(--space-8))">
+      <div class="section-header">
+        <h2>Practice Questions</h2>
+      </div>
+      <p class="text-muted mb-6">Browse questions by domain. Click any question to reveal the answer.</p>
+      <div id="practice-domains" class="domain-cards stagger-children"></div>
+      <div id="practice-list-view" class="hidden mt-8">
+        <div class="flex items-center gap-4 mb-6">
+          <button class="btn btn-secondary btn-sm" onclick="backToPractice()">← Back</button>
+          <h3 id="practice-domain-title">Questions</h3>
+        </div>
+        <div id="practice-questions">
+          <div class="flex justify-between items-center mb-6">
+            <select id="practice-domain-filter" class="form-control" style="max-width: 200px;"
+              onchange="loadPracticeCards()">
+              <option value="All">All Domains</option>
+              <option value="DSA">DSA</option>
+              <option value="DBMS">DBMS</option>
+              <option value="System Design">System Design</option>
+              <option value="Behavioral">Behavioral</option>
+            </select>
+            <button class="btn btn-primary" onclick="goTo('setup')">Take Full Mock Interview</button>
+          </div>
+          <div id="practice-grid"
+            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ SETTINGS SCREEN ═══════ -->
+  <div id="screen-settings" class="screen">
+    <div class="container" style="padding-top:calc(64px + var(--space-8));max-width:600px">
+      <h2 class="mb-8">Settings</h2>
+
+      <div class="card mb-4">
+        <h4 class="mb-4">Interview Settings</h4>
+        <div class="form-group flex justify-between items-center">
+          <label style="margin:0">AI Voice (Text-to-Speech)</label>
+          <label class="switch"><input type="checkbox" id="setting-voice" checked
+              onchange="updateSetting('voiceEnabled',this.checked)"><span class="switch-slider"></span></label>
+        </div>
+        <div class="form-group flex justify-between items-center">
+          <label style="margin:0">Webcam Monitoring</label>
+          <label class="switch"><input type="checkbox" id="setting-webcam" checked
+              onchange="updateSetting('webcamEnabled',this.checked)"><span class="switch-slider"></span></label>
+        </div>
+        <div class="form-group flex justify-between items-center">
+          <label style="margin:0">Face & Eye Detection</label>
+          <label class="switch"><input type="checkbox" id="setting-face" checked
+              onchange="updateSetting('faceDetectionEnabled',this.checked)"><span class="switch-slider"></span></label>
+        </div>
+        <div class="form-group flex justify-between items-center">
+          <label style="margin:0">Fullscreen Mode</label>
+          <label class="switch"><input type="checkbox" id="setting-fullscreen" checked
+              onchange="updateSetting('fullscreenMode',this.checked)"><span class="switch-slider"></span></label>
+        </div>
+        <div class="form-group flex justify-between items-center">
+          <label style="margin:0">Sound Effects</label>
+          <label class="switch"><input type="checkbox" id="setting-sound" checked
+              onchange="updateSetting('soundEffects',this.checked)"><span class="switch-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <h4 class="mb-4" style="display:flex;align-items:center;gap:8px;"><svg width="20" height="20" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+          </svg> Data Management</h4>
+        <div class="flex gap-3 flex-wrap">
+          <button class="btn btn-secondary" onclick="exportData()" style="display:flex;align-items:center;gap:6px;"><svg
+              width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+            </svg> Export Data</button>
+          <button class="btn btn-danger" onclick="clearAllData()" style="display:flex;align-items:center;gap:6px;"><svg
+              width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+              </path>
+            </svg> Clear All Data</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4 class="mb-4" style="display:flex;align-items:center;gap:8px;"><svg width="20" height="20" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg> About</h4>
+        <p class="text-sm text-muted">AI Mock Interview System v1.0</p>
+        <p class="text-sm text-muted mt-2">A comprehensive AI-powered mock interview platform for placement preparation.
+          Features include adaptive questioning, face & eye detection, anti-cheating security, voice interaction, and
+          detailed performance analytics.</p>
+        <p class="text-sm text-muted mt-2">Built for enterprise placement success.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ SCRIPTS ═══════ -->
+  <script src="js/storage.js"></script>
+  <script src="js/speech.js"></script>
+  <script src="js/question-bank.js"></script>
+  <script src="js/evaluator.js"></script>
+  <script src="js/security.js"></script>
+  <script src="js/face-detection.js"></script>
+  <script src="js/verification.js"></script>
+  <script src="js/code-editor.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/pdf-report.js"></script>
+  <script src="js/ui-components.js"></script>
+  <script src="js/interview-engine.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>
+The exam is locked for security reasons. Please ensure your face is clearly visible to the camera to continue.
+</p>
+<div style="margin-top:30px; font-size:14px; color:var(--danger);">
+  Monitoring Active...
+</div>
+</div>
+
+<!-- ═══════ SCRIPTS ═══════ -->
+<script src="js/storage.js"></script>
+<script src="js/speech.js"></script>
+<script src="js/question-bank.js"></script>
+<script src="js/evaluator.js"></script>
+<script src="js/security.js"></script>
+<script src="js/face-detection.js"></script>
+<script src="js/verification.js"></script>
+<script src="js/code-editor.js"></script>
+<script src="js/analytics.js"></script>
+<script src="js/pdf-report.js"></script>
+<script src="js/ui-components.js"></script>
+<script src="js/interview-engine.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+
+</html>
