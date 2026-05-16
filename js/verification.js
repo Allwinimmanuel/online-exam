@@ -202,7 +202,7 @@ const VerificationEngine = (() => {
 
 // Hook into the Proceed button
 window.proceedToInterview = function () {
-  // VerificationEngine.stopStreams(); // Keep alive for corner camera
+  VerificationEngine.stopStreams(); // Stop verification streams before starting proctoring
   document.getElementById('verify-preview-container').classList.add('hidden');
 
   // Actually start the interview now

@@ -56,14 +56,21 @@ const FaceDetection = (() => {
     }
   }
 
-  async function init(videoSelector) {
-    videoEl = document.querySelector(videoSelector);
+  async function init(containerSelector) {
+    const container = document.querySelector(containerSelector);
+    if (!container) return false;
+
+    // Create or find video element
+    videoEl = container.querySelector('video');
     if (!videoEl) {
-      // Create hidden video element if PiP container not ready
       videoEl = document.createElement('video');
       videoEl.autoplay = true;
       videoEl.playsInline = true;
       videoEl.muted = true;
+      videoEl.style.width = '100%';
+      videoEl.style.height = '100%';
+      videoEl.style.objectFit = 'cover';
+      container.appendChild(videoEl);
     }
 
     // Load ML models
@@ -113,11 +120,14 @@ const FaceDetection = (() => {
 
   function stopCamera() {
     if (stream) {
-      stream.getTracks().forEach(t => t.stop());
+      stream.getTracks().forEach(track => track.stop());
       stream = null;
     }
-    if (videoEl) videoEl.srcObject = null;
+    if (videoEl) {
+      videoEl.srcObject = null;
+    }
     stopDetection();
+    isActive = false;
   }
 
   function startDetection(callbacks = {}) {

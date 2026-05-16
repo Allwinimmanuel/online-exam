@@ -18,6 +18,13 @@
   box-shadow: 4px 0 24px rgba(0,0,0,0.4);
 }
 
+.strike-dot.active {
+  background: var(--danger-500) !important;
+  border-color: var(--danger-600) !important;
+  box-shadow: 0 0 8px var(--danger-500);
+  transition: all 0.3s ease;
+}
+
 .nav-brand, .nav-logo {
   display: flex;
   align-items: center;

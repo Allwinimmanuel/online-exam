@@ -343,10 +343,11 @@ const App = (() => {
       Security.requestFullscreen();
     }
 
-    // Show Webcam PiP in corner
+    // Show Webcam PiP in corner explicitly
     const webcamContainer = document.getElementById('webcam-container');
-    if (webcamContainer) {
+    if (webcamContainer && interviewConfig.webcamEnabled) {
       webcamContainer.style.display = 'block';
+      webcamContainer.classList.remove('hidden');
     }
 
     // Start interview
@@ -410,15 +411,16 @@ const App = (() => {
         _updateTeleprompter(data.message);
         // Force camera off immediately when concluding
         FaceDetection.stopCamera();
-        const webcamContainer = document.getElementById('webcam-container');
-        if (webcamContainer) {
-          webcamContainer.style.display = 'none';
-          webcamContainer.classList.add('hidden');
+        const webcamContainerWrapping = document.getElementById('webcam-container');
+        if (webcamContainerWrapping) {
+          webcamContainerWrapping.style.display = 'none';
+          webcamContainerWrapping.classList.add('hidden');
         }
         break;
 
       case 'finished':
         currentSessionData = data.sessionData;
+        FaceDetection.stopCamera(); 
         break;
     }
   }
@@ -500,6 +502,16 @@ const App = (() => {
   }
 
   function _handleSecurityTerminate(reason) {
+    // Shutdown proctoring
+    FaceDetection.stopCamera();
+    Security.deactivate();
+    
+    const webcamContainer = document.getElementById('webcam-container');
+    if (webcamContainer) {
+      webcamContainer.style.display = 'none';
+      webcamContainer.classList.add('hidden');
+    }
+
     // Human-like AI Proctor Termination
     if (interviewConfig && interviewConfig.voiceEnabled) {
       const settings = Storage.getSettings();
@@ -508,34 +520,35 @@ const App = (() => {
 
     UI.showModal({
       title: 'Interview Terminated',
-      content: `<p style="color:var(--danger-400)">Your interview has been terminated due to security violations.</p><p><strong>Reason:</strong> ${reason}</p><p>All violations have been logged in your report.</p>`,
-      confirmText: 'View Report',
+      content: `<p style="color:var(--danger-400)">Your interview has been terminated due to security violations.</p><p><strong>Reason:</strong> ${reason}</p><p>You will be redirected to the dashboard.</p>`,
+      confirmText: 'Return Home',
       onConfirm: () => {
-        if (currentSessionData) _showResults(currentSessionData);
-        else _endInterviewUI();
+        window.endInterview();
       },
       onCancel: false,
     });
   }
 
   function _handleFaceViolation(data) {
-    // Route ALL face violations through the centralized strike system
     const messages = {
-      'NO_FACE': 'No face detected! Please look at the camera.',
+      'NO_FACE': 'No face detected! (Strike Issued)',
       'NO_FACE_WARNING': 'Face not detected — please look at the screen.',
-      'LOOK_AWAY': 'You are looking away from the screen. (Fraud Detection)',
-      'MULTIPLE_FACES': 'Multiple persons detected! (Fraud Detection)',
+      'LOOK_AWAY': 'Illegal Eye Movement! (Strike Issued)',
+      'MULTIPLE_FACES': 'Multiple persons detected! (Strike Issued)',
       'HIGH_NERVOUSNESS': 'Take a deep breath. You seem nervous.',
     };
     const msg = messages[data.type] || 'Face detection issue.';
 
     if (data.severity === 'critical') {
-      // Critical face violations go through the strike system — NOT instant termination
+      // Reverted to 3-Strike system per user request
       if (typeof Security !== 'undefined' && Security.isActivated()) {
-        Security.triggerViolation({ type: data.type, severity: 'critical', timestamp: new Date().toISOString() });
+        Security.triggerViolation({ 
+          type: data.type, 
+          severity: 'critical', 
+          timestamp: new Date().toISOString() 
+        });
       }
     } else {
-      // Non-critical: just show a warning toast
       if (typeof UI !== 'undefined') UI.toast(msg, 'warning');
     }
   }

@@ -57,6 +57,9 @@ const Security = (() => {
     document.addEventListener('fullscreenchange', _handleFullscreenChange);
     document.addEventListener('webkitfullscreenchange', _handleFullscreenChange);
 
+    // Print attempt detection
+    window.addEventListener('beforeprint', _handlePrintAttempt);
+
     // DevTools detection
     _startDevToolsDetection();
 
@@ -92,11 +95,17 @@ const Security = (() => {
     document.removeEventListener('webkitfullscreenchange', _handleFullscreenChange);
     window.removeEventListener('blur', _handleWindowBlur);
     window.removeEventListener('resize', _handleResize);
+    window.removeEventListener('beforeprint', _handlePrintAttempt);
 
     clearTimeout(idleTimer);
     clearTimeout(idleWarningTimer);
 
     console.log('🔓 Security module deactivated');
+  }
+
+  function _handlePrintAttempt() {
+    if (!isActive) return;
+    _handleSevereViolation('Print attempt detected (Illegal Activity).');
   }
 
   function _handleVisibility() {
@@ -159,7 +168,7 @@ const Security = (() => {
       }
 
       // Screenshot attempt (PrintScreen)
-      if (e.key === 'PrintScreen') {
+      if (e.key === 'PrintScreen' || e.keyCode === 44) {
         const violation = {
           type: 'SCREENSHOT_ATTEMPT',
           timestamp: new Date().toISOString(),
@@ -167,7 +176,12 @@ const Security = (() => {
         };
         violations.push(violation);
         _triggerViolation(violation);
-        _handleSevereViolation('Attempted to take a screenshot.');
+        _handleSevereViolation('Attempted to take a screenshot (Illegal Move).');
+      }
+
+      // Block Ctrl+S (Save)
+      if (e.ctrlKey && e.key === 's') {
+        _handleSevereViolation('Attempted to save the page (Illegal Move).');
       }
 
       return false;
@@ -224,8 +238,7 @@ const Security = (() => {
 
   function _handleWarning(type, msg) {
     // Light up strike dots
-    window._strikeCount = (window._strikeCount || 0) + 1;
-    const dot = document.getElementById('strike-' + window._strikeCount);
+    const dot = document.getElementById('strike-' + strikeCount);
     if (dot) dot.classList.add('active');
 
     if (typeof UI !== 'undefined') {
@@ -248,7 +261,7 @@ const Security = (() => {
     };
     violations.push(violation);
     _triggerViolation(violation);
-    _handleSevereViolation('Window lost focus — possible screenshot or app switch detected.');
+    _handleSevereViolation('Window lost focus — possible screenshot tool or application switch detected.');
   }
 
   let lastWidth = window.innerWidth;
